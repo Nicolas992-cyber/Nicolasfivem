@@ -1,0 +1,50 @@
+package com.pcvirtual.app
+
+import android.app.Activity
+import android.app.AlertDialog
+import android.os.Bundle
+import android.graphics.Color
+import android.widget.*
+
+class MainActivity : Activity() {
+    private lateinit var title: TextView
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        title = findViewById(R.id.title)
+
+        findViewById<Button>(R.id.files).setOnClickListener {
+            title.text = "📁 ARQUIVOS\n\nGerenciador da PC Virtual"
+        }
+
+        findViewById<Button>(R.id.notes).setOnClickListener {
+            val edit = EditText(this)
+            edit.hint = "Digite suas anotações..."
+            edit.setTextColor(Color.WHITE)
+            edit.setHintTextColor(Color.GRAY)
+
+            AlertDialog.Builder(this)
+                .setTitle("📝 Bloco de Notas")
+                .setView(edit)
+                .setPositiveButton("Salvar") { _, _ ->
+                    title.text = "📝 Nota salva!"
+                }
+                .setNegativeButton("Fechar", null)
+                .show()
+        }
+
+        findViewById<Button>(R.id.settings).setOnClickListener {
+            AlertDialog.Builder(this)
+                .setTitle("⚙ Configurações")
+                .setMessage(
+                    "PC Virtual 1.0\n\n" +
+                    "Interface para Android\n" +
+                    "Sistema inicial funcionando."
+                )
+                .setPositiveButton("OK", null)
+                .show()
+        }
+    }
+}
