@@ -1,50 +1,32 @@
-package com.pcvirtual.app
+name: Build Android APK
 
-import android.app.Activity
-import android.app.AlertDialog
-import android.os.Bundle
-import android.graphics.Color
-import android.widget.*
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
 
-class MainActivity : Activity() {
-    private lateinit var title: TextView
+jobs:
+  build:
+    runs-on: ubuntu-latest
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+    steps:
+      - name: Baixar código
+        uses: actions/checkout@v4
 
-        title = findViewById(R.id.title)
+      - name: Configurar Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
 
-        findViewById<Button>(R.id.files).setOnClickListener {
-            title.text = "📁 ARQUIVOS\n\nGerenciador da PC Virtual"
-        }
+      - name: Dar permissão ao Gradle
+        run: chmod +x gradlew
 
-        findViewById<Button>(R.id.notes).setOnClickListener {
-            val edit = EditText(this)
-            edit.hint = "Digite suas anotações..."
-            edit.setTextColor(Color.WHITE)
-            edit.setHintTextColor(Color.GRAY)
+      - name: Compilar APK
+        run: ./gradlew assembleDebug
 
-            AlertDialog.Builder(this)
-                .setTitle("📝 Bloco de Notas")
-                .setView(edit)
-                .setPositiveButton("Salvar") { _, _ ->
-                    title.text = "📝 Nota salva!"
-                }
-                .setNegativeButton("Fechar", null)
-                .show()
-        }
-
-        findViewById<Button>(R.id.settings).setOnClickListener {
-            AlertDialog.Builder(this)
-                .setTitle("⚙ Configurações")
-                .setMessage(
-                    "PC Virtual 1.0\n\n" +
-                    "Interface para Android\n" +
-                    "Sistema inicial funcionando."
-                )
-                .setPositiveButton("OK", null)
-                .show()
-        }
-    }
-}
+      - name: Salvar APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: PCVirtual-debug
+          path: app/build/outputs/apk/debug/app-debug.apk
